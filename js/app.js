@@ -289,7 +289,7 @@ document.getElementById('btn-reset-zoom').addEventListener('click', resetAllZoom
 const THEME_KEY = 'tanita-theme';
 
 function initTheme() {
-  const saved = localStorage.getItem(THEME_KEY) || 'light';
+  const saved = localStorage.getItem(THEME_KEY) || 'dark';
   document.documentElement.setAttribute('data-theme', saved);
 }
 
