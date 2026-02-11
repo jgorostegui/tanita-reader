@@ -20,7 +20,7 @@ jobs:
       - run: npm ci
 
       - name: Run unit tests
-        run: node --test 'test/**/*.test.js'
+        run: node --test test/
 
   lint:
     name: Lint
