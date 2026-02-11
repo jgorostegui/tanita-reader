@@ -1,0 +1,9 @@
+node_modules/
+public/
+data/
+data2/
+_repos/
+.claude/
+*.png
+*.rar
+CLAUDE.md

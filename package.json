@@ -1,0 +1,20 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test 'test/**/*.test.js'",
+    "lint": "eslint js/ && stylelint css/",
+    "lint:js": "eslint js/",
+    "lint:css": "stylelint css/",
+    "fix": "eslint js/ --fix && stylelint css/ --fix",
+    "fix:js": "eslint js/ --fix",
+    "fix:css": "stylelint css/ --fix",
+    "serve": "python3 -m http.server 8080"
+  },
+  "devDependencies": {
+    "eslint": "^9",
+    "globals": "^15",
+    "stylelint": "^16",
+    "stylelint-config-standard": "^36"
+  }
+}
