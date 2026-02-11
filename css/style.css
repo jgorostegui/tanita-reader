@@ -364,6 +364,25 @@ body::before {
 [data-theme="light"] .icon-dark { display: none; }
 [data-theme="dark"] .icon-light { display: none; }
 
+/* ── GitHub Link ─────────────────────────────────── */
+
+.github-link {
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.github-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 /* ── Info Bar ────────────────────────────────────── */
 
 .info-bar {
