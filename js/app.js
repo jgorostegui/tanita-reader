@@ -1,6 +1,7 @@
 // js/app.js — Entry point and orchestration
 
 import { parseDataFile, parseProfileFile, classifyFile, getSlotNumber } from './parser.js';
+import { generateDemoData } from './demo.js';
 import {
   destroyAll,
   resetAllZoom,
@@ -28,8 +29,8 @@ import {
   setupAggregationMode,
   setupSegmentSlider,
   setSegmentSliderIndex,
-  renderDataTable,
-  setupTableToggle,
+  renderDataView,
+  setupDataViewToggle,
   renderComparisonPanel,
   setupNewUploadButton,
   showUploadError,
@@ -243,7 +244,7 @@ function renderDashboard() {
   renderInfoBar(measurements, activeSlot);
   renderMetricCards(daily);
   renderCharts(measurements);
-  renderDataTable(measurements);
+  renderDataView(measurements);
 
   setupDatePresets(allMeasurements, updateFromFilter);
   setupAggregationMode(displayMode, (mode) => {
@@ -263,7 +264,7 @@ function updateFromFilter() {
   renderInfoBar(measurements, activeSlot);
   renderMetricCards(daily);
   renderCharts(measurements);
-  renderDataTable(measurements);
+  renderDataView(measurements);
 
   setupSegmentSlider(measurements, (m) => {
     updateSegmentCharts(m);
@@ -284,7 +285,7 @@ function resetToUpload() {
 setupDropZone(handleFiles);
 setupDateFilter(updateFromFilter);
 setupNewUploadButton(resetToUpload);
-setupTableToggle();
+setupDataViewToggle();
 document.getElementById('btn-reset-zoom').addEventListener('click', resetAllZoom);
 
 // ── Theme ────────────────────────────────────────────────
@@ -311,3 +312,20 @@ function toggleTheme() {
 
 initTheme();
 document.getElementById('btn-theme-toggle').addEventListener('click', toggleTheme);
+
+// ── Demo Mode ────────────────────────────────────────────
+
+if (new URLSearchParams(window.location.search).has('demo')) {
+  const demoFiles = generateDemoData();
+  for (const { name, text } of demoFiles) {
+    const slot = getSlotNumber(name);
+    const measurements = parseDataFile(text);
+    if (measurements.length) dataSlots[slot] = measurements;
+  }
+  const slots = Object.keys(dataSlots).map(Number).sort((a, b) => a - b);
+  if (slots.length) {
+    activeSlot = slots[0];
+    showView('dashboard');
+    renderDashboard();
+  }
+}

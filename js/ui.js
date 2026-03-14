@@ -242,6 +242,12 @@ export function setupDatePresets(allMeasurements, onApply) {
         from = new Date(last.getFullYear(), last.getMonth() - 6, last.getDate());
       } else if (preset === '1y') {
         from = new Date(last.getFullYear() - 1, last.getMonth(), last.getDate());
+      } else if (preset === '1.5y') {
+        from = new Date(last.getFullYear(), last.getMonth() - 18, last.getDate());
+      } else if (preset === '2y') {
+        from = new Date(last.getFullYear() - 2, last.getMonth(), last.getDate());
+      } else if (preset === '3y') {
+        from = new Date(last.getFullYear() - 3, last.getMonth(), last.getDate());
       }
 
       const fmt = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -327,86 +333,117 @@ export function setSegmentSliderIndex(idx) {
   slider.dispatchEvent(new Event('input'));
 }
 
-// ── Data Table ──────────────────────────────────────────
+// ── Data View (Summary + Grid) ──────────────────────────
 
-const TABLE_COLS = [
-  { key: 'date', label: 'Date', fmt: v => v.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + v.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) },
-  { key: 'weight', label: 'Weight (kg)', fmt: v => v.toFixed(1) },
-  { key: 'bodyFat', label: 'Fat %', fmt: v => v.toFixed(1) },
-  { key: 'muscleMass', label: 'Muscle (kg)', fmt: v => v.toFixed(1) },
-  { key: 'bmi', label: 'BMI', fmt: v => v.toFixed(1) },
-  { key: 'bodyWater', label: 'Water %', fmt: v => v.toFixed(1) },
-  { key: 'visceralFat', label: 'Visc. Fat', fmt: v => v.toString() },
-  { key: 'metabolicAge', label: 'Met. Age', fmt: v => v.toString() },
-  { key: 'dailyCalories', label: 'DCI', fmt: v => v.toString() },
-  { key: 'boneMass', label: 'Bone (kg)', fmt: v => v.toFixed(1) },
+const DATA_VIEW_METRICS = [
+  { key: 'weight', label: 'Weight', unit: 'kg', decimals: 1, lowerBetter: true },
+  { key: 'bodyFat', label: 'Fat %', unit: '%', decimals: 1, lowerBetter: true },
+  { key: 'muscleMass', label: 'Muscle', unit: 'kg', decimals: 1, lowerBetter: false },
+  { key: 'bmi', label: 'BMI', unit: '', decimals: 1, lowerBetter: true },
+  { key: 'bodyWater', label: 'Water %', unit: '%', decimals: 1, lowerBetter: false },
+  { key: 'visceralFat', label: 'Visc. Fat', unit: '', decimals: 0, lowerBetter: true },
+  { key: 'metabolicAge', label: 'Met. Age', unit: 'yr', decimals: 0, lowerBetter: true },
+  { key: 'dailyCalories', label: 'DCI', unit: 'kcal', decimals: 0, lowerBetter: false },
 ];
 
-let sortCol = 'date';
-let sortAsc = false; // newest first by default
-let tableMeasurements = [];
+let currentDataView = 'grid';
+let dataViewMeasurements = [];
 
-export function renderDataTable(measurements) {
-  tableMeasurements = [...measurements];
-  sortCol = 'date';
-  sortAsc = false;
-
-  const table = document.getElementById('data-table');
-  renderTableHead(table);
-  renderTableBody(table);
+export function renderDataView(measurements) {
+  dataViewMeasurements = measurements;
+  const container = document.getElementById('data-view-container');
+  if (!measurements.length) {
+    container.innerHTML = '<div class="empty-state">No data for selected range</div>';
+    return;
+  }
+  if (currentDataView === 'summary') {
+    renderSummaryTable(container, measurements);
+  } else {
+    renderGridTable(container, measurements);
+  }
 }
 
-function renderTableHead(table) {
-  const thead = table.querySelector('thead');
-  thead.innerHTML = '<tr>' + TABLE_COLS.map(col => {
-    const isSorted = col.key === sortCol;
-    const arrow = isSorted ? (sortAsc ? ' &#9650;' : ' &#9660;') : '';
-    const cls = isSorted ? 'sorted' : '';
-    return `<th class="${cls}" data-col="${col.key}">${col.label}<span class="sort-arrow">${arrow}</span></th>`;
-  }).join('') + '</tr>';
-
-  thead.querySelectorAll('th').forEach(th => {
-    th.addEventListener('click', () => {
-      const col = th.dataset.col;
-      if (sortCol === col) {
-        sortAsc = !sortAsc;
-      } else {
-        sortCol = col;
-        sortAsc = true;
-      }
-      renderTableHead(table);
-      renderTableBody(table);
+export function setupDataViewToggle() {
+  const toggle = document.getElementById('data-view-toggle');
+  toggle.querySelectorAll('.btn-group__item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      toggle.querySelectorAll('.btn-group__item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentDataView = btn.dataset.view;
+      renderDataView(dataViewMeasurements);
     });
   });
 }
 
-function renderTableBody(table) {
-  const sorted = [...tableMeasurements].sort((a, b) => {
-    const va = a[sortCol];
-    const vb = b[sortCol];
-    const cmp = va < vb ? -1 : va > vb ? 1 : 0;
-    return sortAsc ? cmp : -cmp;
-  });
+function renderSummaryTable(container, measurements) {
+  const sorted = [...measurements].reverse();
+  const headerCells = DATA_VIEW_METRICS.map(m => `<th>${m.label}</th>`).join('');
 
-  const tbody = table.querySelector('tbody');
-  tbody.innerHTML = sorted.map(m =>
-    '<tr>' + TABLE_COLS.map(col => `<td>${col.fmt(m[col.key])}</td>`).join('') + '</tr>'
-  ).join('');
+  const rows = sorted.map((m, i) => {
+    const prev = i < sorted.length - 1 ? sorted[i + 1] : null;
+    const dateStr = fmtDateShort(m.date);
+
+    const cells = DATA_VIEW_METRICS.map(({ key, decimals, lowerBetter }) => {
+      const val = m[key];
+      const valStr = val.toFixed(decimals);
+      let deltaHTML = '<span class="val-delta flat">&mdash;</span>';
+
+      if (prev) {
+        const diff = val - prev[key];
+        if (Math.abs(diff) > 0.01) {
+          const sign = diff > 0 ? '+' : '';
+          const improved = lowerBetter ? diff < 0 : diff > 0;
+          const cls = improved ? 'better' : 'worse';
+          deltaHTML = `<span class="val-delta ${cls}">${sign}${diff.toFixed(decimals)}</span>`;
+        }
+      }
+
+      return `<td class="val-cell"><span class="val-main">${valStr}</span>${deltaHTML}</td>`;
+    }).join('');
+
+    return `<tr><td class="period-cell">${dateStr}</td>${cells}</tr>`;
+  }).join('');
+
+  container.innerHTML = `
+    <table class="summary-table">
+      <thead><tr><th>Date</th>${headerCells}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
 }
 
-export function setupTableToggle() {
-  const btn = document.getElementById('toggle-table');
-  const wrapper = document.getElementById('data-table-wrapper');
+function renderGridTable(container, measurements) {
+  const maxCols = 10;
+  const data = measurements.length > maxCols
+    ? measurements.slice(-maxCols)
+    : measurements;
 
-  // Clone to remove old listeners
-  const clone = btn.cloneNode(true);
-  btn.replaceWith(clone);
-  const newBtn = document.getElementById('toggle-table');
+  const headerCells = data.map(m =>
+    `<th>${m.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</th>`
+  ).join('');
 
-  newBtn.addEventListener('click', () => {
-    const hidden = wrapper.classList.toggle('hidden');
-    newBtn.textContent = hidden ? 'Show Data Table' : 'Hide Data Table';
-  });
+  const rows = DATA_VIEW_METRICS.map(({ key, label, unit, decimals, lowerBetter }) => {
+    const cells = data.map((m, i) => {
+      const val = m[key];
+      const valStr = val.toFixed(decimals);
+      let cls = '';
+      if (i > 0) {
+        const diff = val - data[i - 1][key];
+        if (Math.abs(diff) > 0.01) {
+          cls = (lowerBetter ? diff < 0 : diff > 0) ? 'cell-better' : 'cell-worse';
+        }
+      }
+      return `<td class="${cls}">${valStr}</td>`;
+    }).join('');
+
+    const unitStr = unit ? `<span class="grid-unit">${unit}</span>` : '';
+    return `<tr><td>${label}${unitStr}</td>${cells}</tr>`;
+  }).join('');
+
+  container.innerHTML = `
+    <table class="grid-table">
+      <thead><tr><th>Metric</th>${headerCells}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
 }
 
 // ── Comparison Panel ────────────────────────────────────

@@ -59,6 +59,9 @@
           <button class="btn-group__item" data-preset="30d">30d</button>
           <button class="btn-group__item" data-preset="6m">6m</button>
           <button class="btn-group__item active" data-preset="1y">1y</button>
+          <button class="btn-group__item" data-preset="1.5y">1.5y</button>
+          <button class="btn-group__item" data-preset="2y">2y</button>
+          <button class="btn-group__item" data-preset="3y">3y</button>
           <button class="btn-group__item" data-preset="all">All</button>
         </div>
         <div class="date-filter">
@@ -71,6 +74,17 @@
     <div class="info-bar" id="info-bar"></div>
 
     <div id="metric-cards" class="metric-cards"></div>
+
+    <div class="section-title"><h2>History</h2></div>
+    <div class="data-view-section">
+      <div class="data-view-header">
+        <div class="btn-group" id="data-view-toggle">
+          <button class="btn-group__item" data-view="summary">Summary</button>
+          <button class="btn-group__item active" data-view="grid">Grid</button>
+        </div>
+      </div>
+      <div id="data-view-container" class="data-view-wrap"></div>
+    </div>
 
     <div class="section-title"><h2>Trends</h2></div>
     <div class="charts-grid">
@@ -106,15 +120,6 @@
 
     <div id="comparison-panel" class="comparison-panel hidden"></div>
 
-    <div class="table-section">
-      <button id="toggle-table" class="btn-secondary table-toggle-btn">Show Data Table</button>
-      <div id="data-table-wrapper" class="table-wrapper hidden">
-        <table id="data-table">
-          <thead></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/hammerjs@2"></script>
