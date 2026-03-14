@@ -2,25 +2,24 @@
 
 **[Open App](https://jgorostegui.github.io/tanita-reader/)** · **[Try with demo data](https://jgorostegui.github.io/tanita-reader/?demo)**
 
-A web dashboard for visualizing body composition data exported from Tanita BC-601 / BC-603 scales.
+A browser-based dashboard for Tanita BC-601 / BC-603 body composition data. Drop your SD card CSV files and get charts, tables, and segmental breakdowns. No install, no server, no data leaves your browser.
 
-The Tanita BC-601 stores body composition data on an SD card, but the official software is Windows-only, abandoned, and barely functional. This dashboard lets you drop your CSV files into a browser and actually see your data.
+The official Tanita software (BodyVision) is Windows-only, abandoned, and barely functional. This replaces it.
 
 ![Demo](assets/demo.gif)
 
 ## Features
 
-- **Trends** — weight, body fat, muscle mass, BMI, visceral fat, metabolic age, and calories over time
-- **Body composition** — fat mass vs muscle mass vs bone mass breakdown
-- **Segmental analysis** — per-limb and torso fat % and muscle mass with radar charts and time series
-- **Health zones** — BMI and visceral fat charts with healthy/overweight/obese bands
-- **Measurement comparison** — click any data point to compare against your latest reading
-- **History views** — summary table with period deltas or transposed metrics grid
-- **Aggregation** — daily, weekly, or monthly averages
-- **Date filtering** — 30 days, 6 months, 1–3 years, custom range, or all data
-- **Multi-slot** — switch between all 8 user slots
-- **Dark / light theme**
-- **Privacy** — everything runs in your browser, nothing is uploaded
+- Weight, body fat, muscle mass, BMI, visceral fat, metabolic age, calories over time
+- Fat mass vs muscle mass vs bone mass breakdown
+- Per-limb and torso fat % and muscle mass (radar charts + time series)
+- BMI and visceral fat charts with health zone bands
+- Click any data point to compare it against your latest reading
+- History grid with conditional color scale, plus a summary view with period deltas
+- Daily, weekly, or monthly aggregation
+- Date presets (30d, 6m, 1y, 1.5y, 2y, 3y, all) or custom range
+- 8 user slots
+- Dark and light theme
 
 ## Usage
 
@@ -28,7 +27,7 @@ The Tanita BC-601 stores body composition data on an SD card, but the official s
 2. Open the [dashboard](https://jgorostegui.github.io/tanita-reader/)
 3. Drop your `DATA*.CSV` files onto the upload zone
 
-The scale stores measurements in `DATA/DATA1.CSV` through `DATA/DATA8.CSV` (one file per user slot).
+The scale stores measurements in `DATA/DATA1.CSV` through `DATA/DATA8.CSV`, one file per user slot.
 
 ## Development
 
