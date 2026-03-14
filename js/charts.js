@@ -60,7 +60,7 @@ function yScale(title) {
 
 function legend() {
   const c = getCOLORS();
-  return { labels: { color: c.textLight, padding: 12, usePointStyle: true, pointStyleWidth: 10, boxWidth: 8, font: { size: 12 } } };
+  return { labels: { color: c.textLight, padding: 12, usePointStyle: true, pointStyle: 'rectRounded', pointStyleWidth: 16, boxWidth: 16, boxHeight: 3, font: { size: 12 } } };
 }
 
 function tooltipOpts() {

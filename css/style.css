@@ -995,8 +995,13 @@ body::before {
   background: var(--bg);
 }
 
-.cell-better { background: var(--zone-green); }
-.cell-worse { background: var(--zone-red); }
+.cell-better {
+  background: linear-gradient(135deg, var(--zone-green), transparent 80%);
+}
+
+.cell-worse {
+  background: linear-gradient(135deg, var(--zone-red), transparent 80%);
+}
 
 .grid-unit {
   font-size: 0.6rem;
