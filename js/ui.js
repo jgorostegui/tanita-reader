@@ -432,14 +432,15 @@ function renderGridTable(container, measurements) {
       const valStr = val.toFixed(decimals);
       let style = '';
       if (range > 0) {
-        // 0 = worst value, 1 = best value
+        // 0 = worst, 1 = best
         const t = lowerBetter
           ? 1 - (val - min) / range
           : (val - min) / range;
-        // Interpolate: worse (rose) → neutral → better (green)
-        const green = `rgba(110, 231, 183, ${(t * 0.18).toFixed(2)})`;
-        const rose = `rgba(240, 171, 171, ${((1 - t) * 0.18).toFixed(2)})`;
-        style = ` style="background: linear-gradient(135deg, ${rose}, ${green})"`;
+        // Single solid tint: green for good, rose for bad
+        const color = t >= 0.5
+          ? `rgba(110, 231, 183, ${((t - 0.5) * 2 * 0.15).toFixed(3)})`
+          : `rgba(240, 171, 171, ${((0.5 - t) * 2 * 0.15).toFixed(3)})`;
+        style = ` style="background:${color}"`;
       }
       return `<td${style}>${valStr}</td>`;
     }).join('');
