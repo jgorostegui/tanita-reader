@@ -422,17 +422,26 @@ function renderGridTable(container, measurements) {
   ).join('');
 
   const rows = DATA_VIEW_METRICS.map(({ key, label, unit, decimals, lowerBetter }) => {
-    const cells = data.map((m, i) => {
+    const vals = data.map(m => m[key]);
+    const min = Math.min(...vals);
+    const max = Math.max(...vals);
+    const range = max - min;
+
+    const cells = data.map(m => {
       const val = m[key];
       const valStr = val.toFixed(decimals);
-      let cls = '';
-      if (i > 0) {
-        const diff = val - data[i - 1][key];
-        if (Math.abs(diff) > 0.01) {
-          cls = (lowerBetter ? diff < 0 : diff > 0) ? 'cell-better' : 'cell-worse';
-        }
+      let style = '';
+      if (range > 0) {
+        // 0 = worst value, 1 = best value
+        const t = lowerBetter
+          ? 1 - (val - min) / range
+          : (val - min) / range;
+        // Interpolate: worse (rose) → neutral → better (green)
+        const green = `rgba(110, 231, 183, ${(t * 0.18).toFixed(2)})`;
+        const rose = `rgba(240, 171, 171, ${((1 - t) * 0.18).toFixed(2)})`;
+        style = ` style="background: linear-gradient(135deg, ${rose}, ${green})"`;
       }
-      return `<td class="${cls}">${valStr}</td>`;
+      return `<td${style}>${valStr}</td>`;
     }).join('');
 
     const unitStr = unit ? `<span class="grid-unit">${unit}</span>` : '';

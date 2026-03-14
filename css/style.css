@@ -995,13 +995,7 @@ body::before {
   background: var(--bg);
 }
 
-.cell-better {
-  background: linear-gradient(135deg, var(--zone-green), transparent 80%);
-}
-
-.cell-worse {
-  background: linear-gradient(135deg, var(--zone-red), transparent 80%);
-}
+/* Grid cell backgrounds are computed inline via JS color scale */
 
 .grid-unit {
   font-size: 0.6rem;
