@@ -1,6 +1,6 @@
 # Tanita Reader
 
-**[Live Demo](https://jgorostegui.github.io/tanita-reader/)**
+**[Open App](https://jgorostegui.github.io/tanita-reader/)**
 
 A web dashboard for visualizing body composition data exported from Tanita BC-601 / BC-603 scales.
 

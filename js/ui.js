@@ -207,13 +207,6 @@ export function getDateRange() {
   };
 }
 
-export function setDateRange(measurements) {
-  if (!measurements.length) return;
-  const fmt = d => d.toISOString().slice(0, 10);
-  document.getElementById('date-from').value = fmt(measurements[0].date);
-  document.getElementById('date-to').value = fmt(measurements[measurements.length - 1].date);
-}
-
 export function filterByDateRange(measurements) {
   const { from, to } = getDateRange();
   return measurements.filter(m => {
@@ -251,7 +244,7 @@ export function setupDatePresets(allMeasurements, onApply) {
         from = new Date(last.getFullYear() - 1, last.getMonth(), last.getDate());
       }
 
-      const fmt = d => d.toISOString().slice(0, 10);
+      const fmt = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       document.getElementById('date-from').value = fmt(from);
       document.getElementById('date-to').value = fmt(last);
 

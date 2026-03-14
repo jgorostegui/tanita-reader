@@ -37,10 +37,6 @@ function getCOLORS() {
   };
 }
 
-// Backwards-compatible export (snapshot at load time)
-const COLORS = getCOLORS();
-export { COLORS };
-
 // ── Shared Helpers ──────────────────────────────────────
 
 function timeScale() {
@@ -326,9 +322,9 @@ function getSegmentColors() {
   const c = getCOLORS();
   return {
     rightArm: c.weight,
-    leftArm: c.water,
+    leftArm: c.fat,
     rightLeg: c.muscle,
-    leftLeg: c.muscle,
+    leftLeg: c.bone,
     torso: c.bmi,
   };
 }

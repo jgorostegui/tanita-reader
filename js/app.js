@@ -141,18 +141,22 @@ async function readFileText(file) {
 }
 
 async function handleFiles(files) {
+  const entries = [];
   for (const file of files) {
     const type = classifyFile(file.name);
-    const slot = getSlotNumber(file.name);
     if (type === 'unknown') continue;
+    entries.push({ file, type, slot: getSlotNumber(file.name) });
+  }
 
-    const text = await readFileText(file);
+  const texts = await Promise.all(entries.map(e => readFileText(e.file)));
 
+  for (let i = 0; i < entries.length; i++) {
+    const { type, slot } = entries[i];
     if (type === 'data') {
-      const measurements = parseDataFile(text);
+      const measurements = parseDataFile(texts[i]);
       if (measurements.length) dataSlots[slot] = measurements;
     } else if (type === 'profile') {
-      const profile = parseProfileFile(text);
+      const profile = parseProfileFile(texts[i]);
       if (profile) profileSlots[slot] = profile;
     }
   }
@@ -225,9 +229,8 @@ function renderDashboard() {
   if (allMeasurements.length) {
     const last = allMeasurements[allMeasurements.length - 1].date;
     const from = new Date(last.getFullYear() - 1, last.getMonth(), last.getDate());
-    const fmt = d => d.toISOString().slice(0, 10);
-    document.getElementById('date-from').value = fmt(from);
-    document.getElementById('date-to').value = fmt(last);
+    document.getElementById('date-from').value = dateKey(from);
+    document.getElementById('date-to').value = dateKey(last);
   }
   const daily = getFilteredMeasurements();
   const measurements = getAggregatedMeasurements(daily);
@@ -241,7 +244,6 @@ function renderDashboard() {
   renderMetricCards(daily);
   renderCharts(measurements);
   renderDataTable(measurements);
-  setupTableToggle();
 
   setupDatePresets(allMeasurements, updateFromFilter);
   setupAggregationMode(displayMode, (mode) => {
@@ -262,7 +264,6 @@ function updateFromFilter() {
   renderMetricCards(daily);
   renderCharts(measurements);
   renderDataTable(measurements);
-  setupTableToggle();
 
   setupSegmentSlider(measurements, (m) => {
     updateSegmentCharts(m);
@@ -274,6 +275,7 @@ function resetToUpload() {
   for (const k of Object.keys(dataSlots)) delete dataSlots[k];
   for (const k of Object.keys(profileSlots)) delete profileSlots[k];
   activeSlot = 0;
+  displayMode = 'daily';
   showView('upload');
 }
 
@@ -282,6 +284,7 @@ function resetToUpload() {
 setupDropZone(handleFiles);
 setupDateFilter(updateFromFilter);
 setupNewUploadButton(resetToUpload);
+setupTableToggle();
 document.getElementById('btn-reset-zoom').addEventListener('click', resetAllZoom);
 
 // ── Theme ────────────────────────────────────────────────
