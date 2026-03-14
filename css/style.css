@@ -1002,6 +1002,17 @@ body::before {
   color: var(--text-3);
   margin-left: 0.15rem;
 }
+
+.grid-separator td {
+  font-family: Lexend, system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  padding: 0.6rem 0.75rem 0.3rem;
+  border-bottom: 1px solid var(--border);
+}
 /* stylelint-enable no-descending-specificity */
 
 /* ── Accessibility ──────────────────────────────── */

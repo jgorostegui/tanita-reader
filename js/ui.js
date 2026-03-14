@@ -411,6 +411,44 @@ function renderSummaryTable(container, measurements) {
     </table>`;
 }
 
+const SEGMENT_METRICS = [
+  { seg: 'rightArm', label: 'R. Arm', fatKey: 'fat', muscleKey: 'muscle' },
+  { seg: 'leftArm', label: 'L. Arm', fatKey: 'fat', muscleKey: 'muscle' },
+  { seg: 'rightLeg', label: 'R. Leg', fatKey: 'fat', muscleKey: 'muscle' },
+  { seg: 'leftLeg', label: 'L. Leg', fatKey: 'fat', muscleKey: 'muscle' },
+  { seg: 'torso', label: 'Torso', fatKey: 'fat', muscleKey: 'muscle' },
+];
+
+function gridRow(data, label, unit, decimals, lowerBetter, accessor) {
+  const vals = data.map(accessor);
+  const min = Math.min(...vals);
+  const max = Math.max(...vals);
+  const range = max - min;
+
+  const cells = data.map(m => {
+    const val = accessor(m);
+    const valStr = val.toFixed(decimals);
+    let style = '';
+    if (range > 0) {
+      const t = lowerBetter
+        ? 1 - (val - min) / range
+        : (val - min) / range;
+      const color = t >= 0.5
+        ? `rgba(110, 231, 183, ${((t - 0.5) * 2 * 0.15).toFixed(3)})`
+        : `rgba(240, 171, 171, ${((0.5 - t) * 2 * 0.15).toFixed(3)})`;
+      style = ` style="background:${color}"`;
+    }
+    return `<td${style}>${valStr}</td>`;
+  }).join('');
+
+  const unitStr = unit ? `<span class="grid-unit">${unit}</span>` : '';
+  return `<tr><td>${label}${unitStr}</td>${cells}</tr>`;
+}
+
+function gridSeparator(label, colCount) {
+  return `<tr class="grid-separator"><td colspan="${colCount + 1}">${label}</td></tr>`;
+}
+
 function renderGridTable(container, measurements) {
   const maxCols = 10;
   const data = measurements.length > maxCols
@@ -421,38 +459,28 @@ function renderGridTable(container, measurements) {
     `<th>${m.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</th>`
   ).join('');
 
-  const rows = DATA_VIEW_METRICS.map(({ key, label, unit, decimals, lowerBetter }) => {
-    const vals = data.map(m => m[key]);
-    const min = Math.min(...vals);
-    const max = Math.max(...vals);
-    const range = max - min;
+  const mainRows = DATA_VIEW_METRICS.map(({ key, label, unit, decimals, lowerBetter }) =>
+    gridRow(data, label, unit, decimals, lowerBetter, m => m[key])
+  ).join('');
 
-    const cells = data.map(m => {
-      const val = m[key];
-      const valStr = val.toFixed(decimals);
-      let style = '';
-      if (range > 0) {
-        // 0 = worst, 1 = best
-        const t = lowerBetter
-          ? 1 - (val - min) / range
-          : (val - min) / range;
-        // Single solid tint: green for good, rose for bad
-        const color = t >= 0.5
-          ? `rgba(110, 231, 183, ${((t - 0.5) * 2 * 0.15).toFixed(3)})`
-          : `rgba(240, 171, 171, ${((0.5 - t) * 2 * 0.15).toFixed(3)})`;
-        style = ` style="background:${color}"`;
-      }
-      return `<td${style}>${valStr}</td>`;
-    }).join('');
+  const fatRows = SEGMENT_METRICS.map(({ seg, label }) =>
+    gridRow(data, label, '%', 1, true, m => m.segments[seg].fat)
+  ).join('');
 
-    const unitStr = unit ? `<span class="grid-unit">${unit}</span>` : '';
-    return `<tr><td>${label}${unitStr}</td>${cells}</tr>`;
-  }).join('');
+  const muscleRows = SEGMENT_METRICS.map(({ seg, label }) =>
+    gridRow(data, label, 'kg', 1, false, m => m.segments[seg].muscle)
+  ).join('');
 
   container.innerHTML = `
     <table class="grid-table">
       <thead><tr><th>Metric</th>${headerCells}</tr></thead>
-      <tbody>${rows}</tbody>
+      <tbody>
+        ${mainRows}
+        ${gridSeparator('Segment Fat %', data.length)}
+        ${fatRows}
+        ${gridSeparator('Segment Muscle', data.length)}
+        ${muscleRows}
+      </tbody>
     </table>`;
 }
 
