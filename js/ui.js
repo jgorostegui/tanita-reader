@@ -198,7 +198,7 @@ export function setupDateFilter(onChange) {
   document.getElementById('date-to').addEventListener('change', onChange);
 }
 
-export function getDateRange() {
+function getDateRange() {
   const fromVal = document.getElementById('date-from').value;
   const toVal = document.getElementById('date-to').value;
   return {

@@ -1,10 +1,12 @@
 # Tanita Reader
 
-**[Open App](https://jgorostegui.github.io/tanita-reader/)**
+**[Open App](https://jgorostegui.github.io/tanita-reader/)** · **[Try with demo data](https://jgorostegui.github.io/tanita-reader/?demo)**
 
 A web dashboard for visualizing body composition data exported from Tanita BC-601 / BC-603 scales.
 
 The Tanita BC-601 stores body composition data on an SD card, but the official software is Windows-only, abandoned, and barely functional. This dashboard lets you drop your CSV files into a browser and actually see your data.
+
+![Demo](assets/demo.gif)
 
 ## Features
 
@@ -13,10 +15,10 @@ The Tanita BC-601 stores body composition data on an SD card, but the official s
 - **Segmental analysis** — per-limb and torso fat % and muscle mass with radar charts and time series
 - **Health zones** — BMI and visceral fat charts with healthy/overweight/obese bands
 - **Measurement comparison** — click any data point to compare against your latest reading
+- **History views** — summary table with period deltas or transposed metrics grid
 - **Aggregation** — daily, weekly, or monthly averages
-- **Date filtering** — 30 days, 6 months, 1 year, custom range, or all data
+- **Date filtering** — 30 days, 6 months, 1–3 years, custom range, or all data
 - **Multi-slot** — switch between all 8 user slots
-- **Data table** — every measurement sortable by any column
 - **Dark / light theme**
 - **Privacy** — everything runs in your browser, nothing is uploaded
 
@@ -33,9 +35,11 @@ The scale stores measurements in `DATA/DATA1.CSV` through `DATA/DATA8.CSV` (one 
 No build step. Open `index.html` directly or serve locally.
 
 ```bash
-npm install   # dev dependencies only
-npm test      # unit tests
-npm run lint  # eslint + stylelint
+npm install          # dev dependencies only
+npm test             # unit tests
+npm run lint         # eslint + stylelint
+npm run serve        # python3 -m http.server 8080
+just record-demo     # re-record demo gif (requires playwright + ffmpeg)
 ```
 
 ## License
