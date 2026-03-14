@@ -451,9 +451,9 @@ function gridSeparator(label, colCount) {
 
 function renderGridTable(container, measurements) {
   const maxCols = 10;
-  const data = measurements.length > maxCols
+  const data = (measurements.length > maxCols
     ? measurements.slice(-maxCols)
-    : measurements;
+    : measurements).slice().reverse();
 
   const headerCells = data.map(m =>
     `<th>${m.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</th>`
