@@ -45,7 +45,6 @@ async function captureFor(page, ms) {
   const count = Math.round(ms / FRAME_MS);
   for (let i = 0; i < count; i++) {
     await capture(page);
-    await wait(FRAME_MS);
   }
 }
 
@@ -58,7 +57,6 @@ async function captureScroll(page, target, ms) {
     const ease = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p;
     await page.evaluate((y) => window.scrollTo(0, y), startY + distance * ease);
     await capture(page);
-    await wait(FRAME_MS);
   }
 }
 
